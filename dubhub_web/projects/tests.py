@@ -7,22 +7,22 @@ from users.models import User
 
 class ProjectViewTests(TestCase):
     def setUp(self):
-        self.project_author = User.objects.create_user('owner@example.com', '123456789', first_name='Project Owner', is_active=True)
+        self.project_author = User.objects.create_user('owner@example.com', '123456789', first_name='Project Owner', is_active=True, user_type=3)
         self.client.force_login(self.project_author)
         self.project = Projects.objects.create(title='Test Project 0', description='This is a test project.', director=self.project_author)
 
-    def test_get_create(self):
+    def test_get_create_projects(self):
         url = reverse('create-project')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'projects/project_form.html')
+        self.assertTemplateUsed(response, 'create.html')
         self.assertIsInstance(response.context.get('form'), form_project)
 
-    def test_post_create(self):
+    def test_post_create_projects(self):
         data = {
             'title': 'Test Project',
             'description': 'This is a test project.',
-            'director': self.project_author.id
+            'director': self.project_author
         }
         url = reverse('create-project')
         response = self.client.post(url, data)
@@ -31,9 +31,16 @@ class ProjectViewTests(TestCase):
         self.assertEqual(Projects.objects.count(), 2)
         self.assertTrue(Projects.objects.filter(title='Test Project').exists())
 
+    def test_list_projects(self):
+        url = reverse('list-projects')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['projects'].count(), 1)
+        #self.assertEqual(len(response.context.get('projects')), 1)
+
 class ProjectModelTest(TestCase):
     def setUp(self):
-        self.project_author = User.objects.create_user('owner@example.com', '123456789', 'Owner', is_active=True)
+        self.project_author = User.objects.create_user('owner@example.com', '123456789', first_name='Owner', is_active=True)
         self.project = Projects.objects.create(title='Test Project 0', description='This is a test project.', director=self.project_author)
         
     def test_project_creation(self):

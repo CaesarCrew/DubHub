@@ -28,3 +28,13 @@ class UserModelTests(TestCase):
         user = User.objects.get(id=self.user.id)
         self.assertEqual(User.objects.get(id=self.user.id).first_name, 'Test User 0')
         self.assertEqual(User.objects.get(id=self.user.id).email, 'user@example.com')
+
+class TestPhotoUser(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('user@example.com', '123456789', first_name='Test User 0', is_active=True, photo='users/fotos/mito.jpeg')
+
+    def test_user_photo(self):
+        user = User.objects.get(id=self.user.id)
+        response = self.client.get(f'/users/fotos/{user.photo}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/jpeg')

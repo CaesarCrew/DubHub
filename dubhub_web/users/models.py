@@ -25,6 +25,7 @@ class User(AbstractBaseUser):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=130, blank=True, null=True)
     user_type = models.SmallIntegerField(choices=USER_TYPES, verbose_name='type', default=0)
+    photo = models.ImageField(upload_to='users/fotos', verbose_name='Foto', default=None, null=True, blank=True)
 
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
