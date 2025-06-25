@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}News{% endblock %}
+
+{% block content %}
+<h1>News</h1>
+{% if news_list %}
+    <ul>
+        {% for news in news_list %}
+            <li>
+                <a href="{% url 'news_detail' news.id %}">{{ news.title }}</a>
+                <p>{{ news.content|truncatewords:30 }}</p>
+                <p><small>Published on: {{ news.published_date }}</small></p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No news available.</p>
+{% endif %}
+<div class="mt-4">
+    <a href="{% url 'create-news' %}" class="btn btn-success">Create New News</a>
+</div>
+{% endblock %}

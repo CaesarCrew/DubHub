@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Editar notícia</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div id="formset-container">
+        {{ media_formset.management_form }}
+        {% for form in media_formset %}
+            <div class="formset-form">
+                {{ form.as_p }}
+                {% if form.instance.pk %}
+                    <p>Atual: <a href="{{ form.instance.file.url }}">{{ form.instance.file.name }}</a></p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-more">Adicionar imagem</button>
+    <button type="submit">Salvar alterações</button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const formsetContainer = document.getElementById('formset-container');
+        const addButton = document.getElementById('add-more');
+        const totalFormsInput = document.getElementById('id_form-TOTAL_FORMS');
+    
+        addButton.addEventListener('click', function () {
+            const currentFormCount = parseInt(totalFormsInput.value);
+            
+            // Clonar o primeiro formulário como base
+            const emptyForm = formsetContainer.querySelector('.formset-form');
+            const newForm = emptyForm.cloneNode(true);
+    
+            // Limpa os valores dos campos
+            newForm.querySelectorAll('input, textarea, select').forEach((field) => {
+                if (field.type !== 'hidden') field.value = '';
+            });
+    
+            // Atualiza os atributos name e id com o novo índice
+            newForm.innerHTML = newForm.innerHTML.replace(/form-(\d+)-/g, `form-${currentFormCount}-`);
+    
+            // Adiciona o novo formulário ao container
+            formsetContainer.appendChild(newForm);
+    
+            // Atualiza o TOTAL_FORMS
+            totalFormsInput.value = currentFormCount + 1;
+        });
+    });
+    </script>
+{% endblock %}

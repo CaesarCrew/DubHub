@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Create a New News</h1>
+<form method="post" action="{% url 'create-news' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p>DEBUG: management form: {{ media_formset.management_form }}</p>
+
+    <div id="formset-container">
+        {{ media_formset.management_form }}
+        {% for form in media_formset %}
+            <div class="formset-form">
+                {{ form.as_p }}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div id="empty-form" class="formset-form" style="display: none;">
+        {{ media_formset.empty_form.as_p|safe }}
+    </div>
+    <button type="button" id="add-more">Adicionar imagem</button>
+    <button type="submit">Create News</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const addMoreBtn = document.getElementById('add-more');
+    const formsetContainer = document.getElementById('formset-container');
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    const emptyFormDiv = document.getElementById('empty-form');
+
+    addMoreBtn.addEventListener('click', function () {
+        const formCount = parseInt(totalForms.value);
+        const newFormHtml = emptyFormDiv.innerHTML.replace(/__prefix__/g, formCount);
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('formset-form');
+        newDiv.innerHTML = newFormHtml;
+
+        formsetContainer.appendChild(newDiv);
+        totalForms.value = formCount + 1;
+    });
+    });
+    </script>
+{% endblock %}

@@ -6,6 +6,11 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, FileResponse, HttpResponseForbidden
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from .serializers import ProjectsSerializer, ProjectsSerializer
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Projects
@@ -36,6 +41,29 @@ class ProjectListView(ListView):
     model = Projects
     template_name = 'list.html'
     context_object_name = 'projects'
+
+class ProjectAPICreateView(LoginRequiredMixin, generics.CreateAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsSerializer
+
+class ProjectAPIGetView(generics.RetrieveAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsSerializer
+    lookup_field = "pk"
+
+class ProjectAPIListView(generics.ListAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsSerializer
+
+class ProjectAPIEditView(generics.UpdateAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsSerializer
+    lookup_field = "pk"
+
+class ProjectAPIDeleteView(generics.DestroyAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsSerializer
+    lookup_field = "pk"
 
 class FotoProject(View):
     def get(self, request, arquivo):

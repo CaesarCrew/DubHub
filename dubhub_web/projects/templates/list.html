@@ -11,8 +11,8 @@
             <div class="card-body">
             <h5 class="card-title"> {{ project.title }} </h5>
             <p class="card-text"> {{ project.description }} </p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
         </div>
     {% endfor %}
+    <a href="{% url 'create-project' %}" class="btn btn-primary">Create new Project</a>
 {% endblock %}

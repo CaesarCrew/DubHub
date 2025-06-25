@@ -1,9 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
+from rest_framework.test import APITestCase
+from rest_framework import status
 from users.models import User
 from auth_app.forms import SignupForm
 
-# Create your tests here.
 class TestLogin(TestCase):
     def setUp(self):
         self.login_url = reverse('login')
@@ -45,3 +46,23 @@ class TestLogout(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertFalse('_auth_user_id' in self.client.session)
+
+class TestAPILogin(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='admin@example.com',
+            password='123456789',
+            user_type=4,
+            is_active=True
+        )
+
+    def test_login_api(self):
+        url = reverse('api_login')  # certifique-se de que este nome está correto no urls.py
+        data = {
+            'username': 'admin@example.com',  # DRF espera 'username' por padrão
+            'password': '123456789'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('token', response.data)
+        self.assertEqual(response.data['email'], self.user.email)

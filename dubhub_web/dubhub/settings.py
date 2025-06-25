@@ -33,6 +33,8 @@ MY_APPS = [
     'projects',
     'users',
     'auth_app',
+    'news',
+    'characters',
 ]
 
 INSTALLED_APPS = [
@@ -42,6 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
     'jessilver_django_seed',
 ] + MY_APPS
 

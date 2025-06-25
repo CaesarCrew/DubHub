@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Create Character</h1>
+    <form method="post" action="{% url 'create-character' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Create Character</button>
+        <a href="{% url 'list-characters' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

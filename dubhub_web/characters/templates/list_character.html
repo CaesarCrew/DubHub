@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Characters{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-wrap gap-3">
+        {% if characters %}
+            {% for character in characters %}
+                <div class="card" style="width: 18rem;">
+                    {% if character.photo %}
+                        <img src="{{ character.photo.url }}" class="card-img-top" alt="{{ character.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ character.name }}</h5>
+                        <p class="card-text">{{ character.description }}</p>
+                        <p class="card-text"><strong>Gender:</strong> {{ character.get_gender_display }}</p>
+                        <p class="card-text"><strong>Voice Type:</strong> {{ character.get_voice_type_display }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No characters found.</p>
+        {% endif %}
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'create-character' %}" class="btn btn-success">Create New Character</a>
+    </div>
+{% endblock %}

@@ -1,9 +1,65 @@
 from django.test import TestCase
 from django.urls import reverse
+from rest_framework.test import APITestCase
+from rest_framework import status
 
 from .models import Projects
 from .forms import form_project
 from users.models import User
+
+class ProjectAPIViewTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='director@example.com',
+            password='123456789',
+            user_type=1,
+            is_active=True
+        )
+        self.project = Projects.objects.create(
+            title='Test Project',
+            description='Initial Description',
+            director=self.user
+        )
+
+    def test_delete_project(self):
+        url = reverse('api-delete-project', kwargs={'pk': self.project.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Projects.objects.filter(pk=self.project.pk).exists())
+
+    def test_edit_put_project(self):
+        url = reverse('api-edit-project', kwargs={'pk': self.project.pk})
+        data = {
+            'title': 'Updated Project Title',
+            'description': 'Fully updated description',
+            'director': self.user.pk
+        }
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['title'], 'Updated Project Title')
+        self.assertEqual(response.data['description'], 'Fully updated description')
+
+    def test_edit_patch_project(self):
+        url = reverse('api-edit-project', kwargs={'pk': self.project.pk})
+        data = {
+            'description': 'Partially updated description'
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['description'], 'Partially updated description')
+
+    def test_list_projects(self):
+        url = reverse('api-list-projects')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+
+    def test_get_one_project(self):
+        url = reverse('api-get-project', kwargs={'pk': self.project.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['title'], self.project.title)
+        self.assertEqual(response.data['description'], self.project.description)
 
 class ProjectViewTests(TestCase):
     def setUp(self):

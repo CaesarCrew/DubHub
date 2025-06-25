@@ -1,4 +1,6 @@
 from django.test import TestCase
+from django.urls import reverse
+
 from .models import User
 
 class UserModelTests(TestCase):
@@ -31,10 +33,11 @@ class UserModelTests(TestCase):
 
 class TestPhotoUser(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user('user@example.com', '123456789', first_name='Test User 0', is_active=True, photo='users/fotos/mito.jpeg')
+        self.user = User.objects.create_user('user@example.com', '123456789', first_name='Test User 0', is_active=True, photo='users/fotos/1746213107142350.jpg')
 
     def test_user_photo(self):
         user = User.objects.get(id=self.user.id)
-        response = self.client.get(f'/users/fotos/{user.photo}')
+        url = reverse('foto-user', kwargs={'arquivo': '1746213107142350.jpg'})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'image/jpeg')
